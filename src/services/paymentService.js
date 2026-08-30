@@ -7,7 +7,10 @@ import logger from '../utils/logger';
  */
 
 // Get configuration from environment variables
-const FUNCTIONS_URL = import.meta.env.VITE_FUNCTIONS_URL || 'http://127.0.0.1:5001/zipcart-e4531/us-central1';
+const DEFAULT_FUNCTIONS_URL = import.meta.env.DEV
+    ? 'http://127.0.0.1:5001/zipcart-e4531/us-central1'
+    : 'https://us-central1-zipcart-e4531.cloudfunctions.net';
+const FUNCTIONS_URL = import.meta.env.VITE_FUNCTIONS_URL || DEFAULT_FUNCTIONS_URL;
 const CASHFREE_MODE = import.meta.env.VITE_CASHFREE_MODE || 'production';
 
 let cashfreeInstance = null;
@@ -197,4 +200,3 @@ export const processPayment = async (orderData, user) => {
         };
     }
 };
-

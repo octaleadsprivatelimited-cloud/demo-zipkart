@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .firebase/
+.vercel/
 
 # Environment files with sensitive keys
 .env
