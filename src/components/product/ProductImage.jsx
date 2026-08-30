@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { getFrontImage } from '../../utils/imageUtils';
 
+const getInternetProductImage = (title) => {
+    const query = encodeURIComponent(title.trim());
+    return `https://tse1.mm.bing.net/th?q=${query}&w=400&h=400&c=7&rs=1&p=0&dpr=1.5&pid=1.7&mkt=en-IN&adlt=moderate`;
+};
+
 const getProductSymbol = (product) => {
     const title = [product?.name, product?.productName, product?.categoryName].filter(Boolean).join(' ').toLowerCase();
     const symbols = [
@@ -18,11 +23,15 @@ const getTitleHue = (value = '') => [...value].reduce((hash, char) => ((hash * 3
 
 const ProductImage = ({ product, className = '', alt }) => {
     const [failed, setFailed] = useState(false);
+    const [internetFailed, setInternetFailed] = useState(false);
     const source = getFrontImage(product);
     const showOriginal = !failed && source && !source.includes('placehold.co');
     const title = product?.name || product?.productName || product?.title || 'Product';
     const brand = title.split(/\s+/).slice(0, 2).join(' ');
     const hue = getTitleHue(title);
+    const displaySource = showOriginal
+        ? source
+        : (!internetFailed ? getInternetProductImage(title) : null);
 
     return (
         <div
@@ -40,13 +49,17 @@ const ProductImage = ({ product, className = '', alt }) => {
                 </span>
                 <span className="line-clamp-2 text-[9px] font-semibold leading-tight text-slate-600">{title}</span>
             </div>
-            {showOriginal && (
+            {displaySource && (
                 <img
-                    src={source}
+                    src={displaySource}
                     alt=""
                     loading="lazy"
-                    onError={() => setFailed(true)}
-                    className="absolute inset-0 w-full h-full object-contain"
+                    referrerPolicy="no-referrer"
+                    onError={() => {
+                        if (showOriginal) setFailed(true);
+                        else setInternetFailed(true);
+                    }}
+                    className="absolute inset-0 w-full h-full object-contain bg-white"
                 />
             )}
         </div>
